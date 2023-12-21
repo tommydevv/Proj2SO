@@ -15,6 +15,7 @@
 int main(int argc, char* argv[]) {
 
   int fd;
+  char buffer[128];
 
   if (argc < 2 || argc > 3) {
     fprintf(stderr, "Usage: %s\n <pipe_path> [delay]\n", argv[0]);
@@ -57,12 +58,30 @@ int main(int argc, char* argv[]) {
 
   while (1) {
     //TODO: Read from pipe
-    fd = open(argv[1], O_RDWR);
+    if(fd = open(argv[1], O_RDWR)!= 0){
+      fprintf(stderr, "Failed to open register pipe\n");
+      return 1;
+    }
+
+    if(read(fd, buffer, sizeof(buffer))!= 0){
+      fprintf(stderr, "Failed to read from register pipe\n");
+      return 1;
+    }
     //TODO: Write new client to the producer-consumer buffer
+    
+
   }
 
   //TODO: Close Server
-  close(fd);
+  if(close(fd) != 0){
+    fprintf(stderr, "Failed to close register pipe\n");
+    return 1;
+  }
+
+  if(unlink(fd) != 0){
+    fprintf(stderr, "Failed to unlink register pipe\n");
+    return 1;
+  }
 
   ems_terminate();
 }

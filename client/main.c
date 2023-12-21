@@ -12,12 +12,10 @@
 #include "common/constants.h"
 #include "parser.h"
 
-void readFile(int in_fd, int out_fd);
+void readFile(in_fd, out_fd);
 
 int main(int argc, char* argv[]) {
 
-  int fd;
-  char menssagem[] = "1 ";
 
   if (argc < 5) {
     fprintf(stderr, "Usage: %s <request pipe path> <response pipe path> <server pipe path> <.jobs file path>\n",
@@ -55,21 +53,14 @@ int main(int argc, char* argv[]) {
 
   }
 
-  fd = open(argv[1], O_WRONLY);
-
-  write(fd, menssagem, 128);
-
-  close(fd);
-
-  
-
-
-
-
 
   readFile(in_fd, out_fd);
 
 }
+
+
+
+
 
 void readFile(in_fd, out_fd){
 
