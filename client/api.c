@@ -9,23 +9,32 @@
 #include <string.h>
 
 #include "api.h"
+#include "common/constants.h"
 
 int fdReq;
 int fdResp;
+int session_id = 0;
 
 char session_id[81];
 
 int ems_setup(char const* req_pipe_path, char const* resp_pipe_path, char const* server_pipe_path) {
   
   //TODO: create pipes and connect to the server
-  char menssagem[128] = "1 ";
 
+  if(session_id >= MAX_SESSION_COUNT){
+
+    return 1;
+  } 
+  
+  char menssagem[128] = "1 ";
+  
   if(mkfifo(req_pipe_path, 0666) != 0){
     if(errno != EEXIST){
       fprintf(stderr, "Failed to create request pipe\n");
       return 1;
     }
   }
+  session_id ++;
 
   if(mkfifo(resp_pipe_path, 0666) != 0){
     if(errno != EEXIST){
@@ -89,55 +98,44 @@ int ems_quit(void) {
     return 1;
   }
 
+  session_id --;
+
   return 0;
 }
 
 int ems_create(unsigned int event_id, size_t num_rows, size_t num_cols) {
   //TODO: send create request to the server (through the request pipe) and wait for the response (through the response pipe)
-  char menssagem[128] = "3 ";
+  char menssagem[128];
 
-  strcat(menssagem, event_id);
-  strcat(menssagem, " ");
-  strcat(menssagem, num_rows);
-  strcat(menssagem, " ");
-  strcat(menssagem, num_cols);
-  strcat(menssagem, "\n");
+  sprintf(menssagem, "3 %u %zu %zu\n", event_id, num_rows, num_cols);
 
   write(fdReq, menssagem, sizeof(menssagem));
 
-  return 1;
+  return 0;
 }
 
 int ems_reserve(unsigned int event_id, size_t num_seats, size_t* xs, size_t* ys) {
 
   //TODO: send reserve request to the server (through the request pipe) and wait for the response (through the response pipe)
-  char menssagem[128] = "4 ";
+  char menssagem[128];
 
-  strcat(menssagem, event_id);
-  strcat(menssagem, " ");
-  strcat(menssagem, num_seats);
-  strcat(menssagem, " ");
-  strcat(menssagem, xs);
-  strcat(menssagem, " ");
-  strcat(menssagem, ys);
-  strcat(menssagem, "\n");
+  sprintf(menssagem, "4 %u %zu %zu %zu\n", event_id, num_seats, *xs, *ys);
 
   write(fdReq, menssagem, sizeof(menssagem));
 
-  return 1;
+  return 0;
 }
 
 int ems_show(int out_fd, unsigned int event_id) {
   //TODO: send show request to the server (through the request pipe) and wait for the response (through the response pipe)
-  char menssagem[128] = "5 ";
+  char menssagem[128];
 
-  strcat(menssagem, event_id);
-  strcat(menssagem, "\n");
+  sprintf(menssagem, "5 %u\n", event_id);
 
   write(fdReq, menssagem, sizeof(menssagem));
 
 
-  return 1;
+  return 0;
 }
 
 int ems_list_events(int out_fd) {
@@ -146,5 +144,5 @@ int ems_list_events(int out_fd) {
 
   write(fdReq, menssagem, sizeof(menssagem));
 
-  return 1;
+  return 0;
 }
