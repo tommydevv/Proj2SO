@@ -12,7 +12,7 @@
 #include "common/constants.h"
 #include "parser.h"
 
-void readFile(in_fd, out_fd);
+void readFile(int in_fd, int out_fd);
 
 int main(int argc, char* argv[]) {
 
@@ -53,16 +53,12 @@ int main(int argc, char* argv[]) {
 
   }
 
-
   readFile(in_fd, out_fd);
 
 }
 
 
-
-
-
-void readFile(in_fd, out_fd){
+void readFile(int in_fd, int out_fd){
 
   while(1){
 
@@ -140,7 +136,6 @@ void readFile(in_fd, out_fd){
         close(in_fd);
         close(out_fd);
         ems_quit();
-        return 0;
     }
   }
 }

@@ -7,7 +7,6 @@
 #include <errno.h>
 #include <fcntl.h>
 
-#include "client/main.c"
 #include "common/constants.h"
 #include "common/io.h"
 #include "operations.h"
@@ -15,7 +14,8 @@
 int main(int argc, char* argv[]) {
 
   int fd;
-  char buffer[128];
+  char buffer[40];
+  char buffer2[40];
 
   if (argc < 2 || argc > 3) {
     fprintf(stderr, "Usage: %s\n <pipe_path> [delay]\n", argv[0]);
@@ -64,6 +64,11 @@ int main(int argc, char* argv[]) {
     }
 
     if(read(fd, buffer, sizeof(buffer))!= 0){
+      fprintf(stderr, "Failed to read from register pipe\n");
+      return 1;
+    }
+
+    if(read(fd, buffer2, sizeof(buffer2))!= 0){
       fprintf(stderr, "Failed to read from register pipe\n");
       return 1;
     }
