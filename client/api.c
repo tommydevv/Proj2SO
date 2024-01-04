@@ -35,9 +35,13 @@ int ems_setup(char const* req_pipe_path, char const* resp_pipe_path, char const*
   }
 
   int fd = open(server_pipe_path, O_WRONLY);
-  write(fd, &OP_CODE, sizeof(OP_CODE));
+  int a = write(fd, &OP_CODE, sizeof(OP_CODE));
+  printf("%d\n", a);
   write(fd, req_pipe_path, 40);
+  printf("%d\n", fd);
   write(fd, resp_pipe_path, 40);
+
+  printf("%d\n", fd);
 
   //abrir req  para ja ficar aberto e ir escrever nas funcoes abaixo e resp pipe, dar read do response paara receber o sesh id 
   fdReq = open(req_pipe_path, O_WRONLY);

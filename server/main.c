@@ -1,6 +1,7 @@
 #include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -45,36 +46,38 @@ int main(int argc, char* argv[]) {
   }
 
   //TODO: Intialize server, create worker threads
+  if(unlink(argv[1]) != 0){
+    fprintf(stderr, "Failed to unlink register pipe\n");
+    return 1;
+  } 
 
   if (mkfifo(argv[1], 0666) != 0){
-
-    if(errno != EEXIST){
-
-      fprintf(stderr, "Failed to create register pipe\n");
-      return 1;
-      
-    }
+    return 1;
+    
   }
 
   while (1) {
+    int OP_CODE;
     //TODO: Read from pipe
-    if(fd = open(argv[1], O_RDWR)!= 0){
-      fprintf(stderr, "Failed to open register pipe\n");
-      return 1;
-    }
+    fd = open(argv[1], O_RDWR);
+    printf("%d\n", fd);
 
-    if(read(fd, buffer, sizeof(buffer))!= 0){
+    if (read(fd, &OP_CODE, sizeof(int)) < 0){
       fprintf(stderr, "Failed to read from register pipe\n");
       return 1;
     }
 
-    if(read(fd, buffer2, sizeof(buffer2))!= 0){
+    if(read(fd, buffer, sizeof(buffer))< 0){
       fprintf(stderr, "Failed to read from register pipe\n");
       return 1;
     }
+
+    if(read(fd, buffer2, sizeof(buffer2))< 0){
+      fprintf(stderr, "Failed to read from register pipe\n");
+      return 1;
+    }
+
     //TODO: Write new client to the producer-consumer buffer
-    
-
   }
 
   //TODO: Close Server
@@ -83,10 +86,7 @@ int main(int argc, char* argv[]) {
     return 1;
   }
 
-  if(unlink(fd) != 0){
-    fprintf(stderr, "Failed to unlink register pipe\n");
-    return 1;
-  }
+
 
   ems_terminate();
 }
